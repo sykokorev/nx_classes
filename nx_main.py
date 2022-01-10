@@ -12,7 +12,7 @@ from common_class import CommonClass
 def create_assembly(root_dir, gte_dir, coeff=1):
 
     """
-    Main function for creating NX assembly of flow path compressor and turbine
+    Main function for creating NX assembly of flow path compressor or/and turbine
     :param root_dir: Directory in which file will be saved
     :param gte_dir: Directory with compressor/turbine data
     :param coeff: Convert to mm
@@ -33,7 +33,7 @@ def create_assembly(root_dir, gte_dir, coeff=1):
     files = CommonClass()
 
     file_exists, airfoil_files = files.get_files(airfoils_dir, ('.dat',))
-    prt_dir = os.path.join(gte_dir, 'prt')
+    prt_dir = os.path.join(root_dir, 'prt')
     is_created, create_dir_msg = files.create_dir(prt_dir)
 
     # Create blade with airfoil points
