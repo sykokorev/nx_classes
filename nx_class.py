@@ -95,6 +95,7 @@ class NX:
                     return msg
 
     def create_prt_file(self, igs_file: str, prt_dir: str):
+
         """
         Create new NX prt file from an iges file
         :param igs_file: Input iges file (str)
@@ -126,6 +127,7 @@ class NX:
                 return False, msg
 
     def close_all(self, prt_file):
+
         """
         Closes all parts of NX Work Part Object
         :param prt_file: File that will be closed
@@ -207,9 +209,7 @@ class NX:
             Full part file name which is being added
         :param assembly_file: str,
             Full assembly file name in which part is being added
-        :return: Bool ,str
-            True if part has been added successfully or False otherwise
-            and logging message
+        :return: False or Tagged Object and logging message
         """
 
         if assembly_file:
@@ -245,10 +245,11 @@ class NX:
 
             try:
                 nx_obj_builder = component_builder.Commit()
+                obj_tag = nx_obj_builder.Tag
                 component_builder.Destroy()
                 component_pos.ClearNetwork()
                 msg = f"Part {part} has been successfully added."
-                return True, msg
+                return obj_tag, msg
             except Nx.NXException as ex:
                 msg = f"Error committing component {part}. " + str(ex)
                 return False, msg
@@ -271,9 +272,7 @@ class NX:
             Can take two values ThroughPoints or ByPoles
         :param closed_spline: Bool,
             If spline has to be closed or not
-        :return: Bool (Tagged object), str
-            Tagged spline if spline has been created successfully or False otherwise
-            and logging message
+        :return: False or Tagged object and logging message
         """
 
         curve_points = parameters.get('points', None)
@@ -351,7 +350,7 @@ class NX:
             :parameter: distance_tolerance: float=0.01 sets the distance tolerance
             :parameter: chaining_tolerance: float=0.0095 sets the chaining tolerance
             :parameter: angle_tolerance: float=0.5 sets the angle tolerance
-        :return: Bool or Tagged Object and logging message.
+        :return: False or Tagged Object and logging message.
         """
 
         section_curves = parameters.get('sections', {})
@@ -450,7 +449,7 @@ class NX:
             :parameter: chaining_tolerance: float=0.0095 sets the chaining tolerance
             :parameter: g0_tolerance: float=0.01 sets the G0 (Position) tolerance
             :parameter: g1_tolerance: float=0.5 sets the G1 (Tangent) tolerance
-        :return: Bool or Tagged Object and logging message
+        :return: False or Tagged Object and logging message
         """
 
         section_curves = parameters.get('sections', {})
@@ -502,7 +501,7 @@ class NX:
             builder.OrientationMethod.OrientationCurve.AngleTolerance = angle_tolerance
 
             builder.OrientationMethod.AngularLaw.LawCurve.DistanceTolerance = distance_tolerance
-            builder.OrientationMethod.AngularLaw.LawCurve.ChainingTolerance = distance_tolerance
+            builder.OrientationMethod.AngularLaw.LawCurve.ChainingTolerance = chaining_tolerance
             builder.OrientationMethod.AngularLaw.LawCurve.AngleTolerance = angle_tolerance
 
             builder.ScalingMethod.AreaLaw.LawCurve.DistanceTolerance = distance_tolerance
