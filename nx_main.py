@@ -9,17 +9,15 @@ from nx_class import NX
 from common_class import CommonClass
 
 
-def create_assembly(root_dir, gte_dir):
+def create_assembly(root_dir, gte_dir, coeff=1):
 
     """
     Main function for creating NX assembly of flow path compressor and turbine
     :param root_dir: Directory in which file will be saved
     :param gte_dir: Directory with compressor/turbine data
+    :param coeff: Convert to mm
     :return: None
     """
-
-    coef = 1000 # Transfer to mm
-
 
     # Logging
     log_file = os.path.join(root_dir, 'nx_logging.log')
@@ -31,18 +29,18 @@ def create_assembly(root_dir, gte_dir):
     )
     logger = logging.getLogger(__name__)
 
-    airfoils_dir = os.path.join(root_dir, gte_dir, 'airfoils')
+    airfoils_dir = os.path.join(gte_dir, 'airfoils')
     files = CommonClass()
 
     file_exists, airfoil_files = files.get_files(airfoils_dir, ('.dat',))
-    nx = NX()
-    prt_dir = os.path.join(root_dir, gte_dir, 'prt')
+    prt_dir = os.path.join(gte_dir, 'prt')
     is_created, create_dir_msg = files.create_dir(prt_dir)
 
     # Create blade with airfoil points
     if is_created:
         if file_exists:
             for file_ in airfoil_files:
+                nx = NX()
                 airfoil = {}
                 with open(file_, newline='') as csv_file:
                     i = 1
@@ -116,8 +114,8 @@ def create_assembly(root_dir, gte_dir):
                         'surface_type': 'through_curves'
                     }
 
-                    section_help_points = [[p * coef for p in point[0]] for point in airfoil.values()]
-                    guide_help_points = [[p * coef for p in point[0]] for point in guide_lines_points]
+                    section_help_points = [[p * coeff for p in point[0]] for point in airfoil.values()]
+                    guide_help_points = [[p * coeff for p in point[0]] for point in guide_lines_points]
 
                     parameters_swept = {
                         'sections': spline_tags,
@@ -138,13 +136,13 @@ def create_assembly(root_dir, gte_dir):
                 is_new_file_closed, log_message = nx.close_all(nx_file_name)
                 if is_new_file_closed:
                     logger.info(log_message)
+                    del nx
                 else:
                     logger.error(log_message)
+                    del nx
     else:
         logger.critical(create_dir_msg)
 
-    # Delete NX() object and create new NX() object
-    del nx
     nx = NX()
 
     assembly_file = os.path.join(root_dir, 'assembly.prt')
@@ -176,7 +174,7 @@ def create_assembly(root_dir, gte_dir):
 
                 if is_data_obtained:
                     is_spline_added, spline_msg = nx.create_spline_with_points(
-                        curve_points=curve_points, coeff=coef, closed_spline=False
+                        curve_points=curve_points, coeff=coeff, closed_spline=False
                     )
                     if not is_spline_added:
                         logger.error(spline_msg)
@@ -195,4 +193,4 @@ if __name__ == "__main__":
 
     root_dir = r"P:\sea_gte\assembly"
     gte_dir = os.path.join(root_dir, 'turbine')
-    create_assembly(root_dir, gte_dir)
+    create_assembly(root_dir, gte_dir, coeff=1000)
