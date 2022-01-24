@@ -32,7 +32,7 @@ def create_assembly(root_dir, gte_dir, coeff=1):
     airfoils_dir = os.path.join(gte_dir, 'airfoils')
     files = CommonClass()
 
-    file_exists, airfoil_files = files.get_files(airfoils_dir, ('.dat',))
+    file_exists, airfoil_files = files.get_files(airfoils_dir, ('.csv',))
     prt_dir = os.path.join(root_dir, 'prt')
     is_created, create_dir_msg = files.create_dir(prt_dir)
 
@@ -167,7 +167,7 @@ def create_assembly(root_dir, gte_dir, coeff=1):
 
         # Adding curves to the assembly
         curves_files_dir = os.path.join(root_dir, 'curves')
-        curves_exists, curves_files = files.get_files(curves_files_dir, ('.dat',))
+        curves_exists, curves_files = files.get_files(curves_files_dir, ('.csv',))
         if curves_exists:
             for curve in curves_files:
                 is_data_obtained, curve_points = files.get_data_from_file(curve)
